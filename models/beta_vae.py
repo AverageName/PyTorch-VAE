@@ -72,7 +72,6 @@ class BetaVAE(BaseVAE):
 
 
         self.decoder = nn.Sequential(*modules)
-        print("IN CHANNELS: ", in_channels)
         self.final_layer = nn.Sequential(
                             nn.ConvTranspose2d(hidden_dims[-1],
                                                hidden_dims[-1],

@@ -1,7 +1,7 @@
 model_params:
   name: 'BetaVAE'
   in_channels: 1
-  latent_dim: 128
+  latent_dim: 16
   loss_type: 'B'
   gamma: 10.0
   max_capacity: 25
@@ -18,8 +18,8 @@ exp_params:
 
 trainer_params:
   gpus: 1
-  max_nb_epochs: 50
-  max_epochs: 50
+  max_nb_epochs: 10
+  max_epochs: 10
 
 logging_params:
   save_dir: "/content/logs/"
