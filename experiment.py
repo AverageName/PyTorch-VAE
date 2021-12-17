@@ -69,6 +69,7 @@ class VAEXperiment(pl.LightningModule):
         test_input = test_input.to(self.curr_device)
         test_label = test_label.to(self.curr_device)
         recons = self.model.generate(test_input, labels = test_label)
+        print(recons.shape)
         vutils.save_image(recons.data,
                           f"{self.logger.save_dir}{self.logger.name}/version_{self.logger.version}/"
                           f"recons_{self.logger.name}_{self.current_epoch}.png",
@@ -136,7 +137,7 @@ class VAEXperiment(pl.LightningModule):
     @data_loader
     def train_dataloader(self):
         if self.params['dataset'] in ['celeba', 'mnist']:
-            transform = self.data_transforms(self.params['dataset'])
+            transform = self.data_transforms()
         else:
             raise ValueError('No such dataset')
 
@@ -160,7 +161,7 @@ class VAEXperiment(pl.LightningModule):
     @data_loader
     def val_dataloader(self):
         if self.params['dataset'] in ['celeba', 'mnist']:
-            transform = self.data_transforms(self.params['dataset'])
+            transform = self.data_transforms()
         else:
             raise ValueError('No such dataset')
 
@@ -182,6 +183,7 @@ class VAEXperiment(pl.LightningModule):
                                                 batch_size=144,
                                                 shuffle=True,
                                                 drop_last=True)
+            self.num_val_imgs = len(self.sample_dataloader)
 
         return self.sample_dataloader
 
