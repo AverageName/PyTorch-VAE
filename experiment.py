@@ -1,4 +1,5 @@
 import math
+from numpy.core.numeric import False_
 import torch
 from torch import optim
 from models import BaseVAE
@@ -7,7 +8,7 @@ from utils import data_loader
 import pytorch_lightning as pl
 from torchvision import transforms
 import torchvision.utils as vutils
-from torchvision.datasets import CelebA
+from torchvision.datasets import CelebA, MNIST
 from torch.utils.data import DataLoader
 
 
@@ -134,15 +135,21 @@ class VAEXperiment(pl.LightningModule):
 
     @data_loader
     def train_dataloader(self):
-        transform = self.data_transforms()
+        if self.params['dataset'] in ['celeba', 'mnist']:
+            transform = self.data_transforms(self.params['dataset'])
+        else:
+            raise ValueError('No such dataset')
 
         if self.params['dataset'] == 'celeba':
             dataset = CelebA(root = self.params['data_path'],
                              split = "train",
                              transform=transform,
                              download=False)
-        else:
-            raise ValueError('Undefined dataset type')
+        elif self.params['dataset'] == 'mnist':
+            dataset = MNIST(root=self.params['data_path'],
+                            train=True,
+                            transform=transform,
+                            download=True)
 
         self.num_train_imgs = len(dataset)
         return DataLoader(dataset,
@@ -152,7 +159,11 @@ class VAEXperiment(pl.LightningModule):
 
     @data_loader
     def val_dataloader(self):
-        transform = self.data_transforms()
+        if self.params['dataset'] in ['celeba', 'mnist']:
+            transform = self.data_transforms(self.params['dataset'])
+        else:
+            raise ValueError('No such dataset')
+
 
         if self.params['dataset'] == 'celeba':
             self.sample_dataloader =  DataLoader(CelebA(root = self.params['data_path'],
@@ -163,8 +174,14 @@ class VAEXperiment(pl.LightningModule):
                                                  shuffle = True,
                                                  drop_last=True)
             self.num_val_imgs = len(self.sample_dataloader)
-        else:
-            raise ValueError('Undefined dataset type')
+        elif self.params['dataset'] == 'mnist':
+            self.sample_dataloader = DataLoader(MNIST(root=self.params['data_path'],
+                                                train=False,
+                                                transform=transform,
+                                                download=True),
+                                                batch_size=144,
+                                                shuffle=True,
+                                                drop_last=True)
 
         return self.sample_dataloader
 
@@ -179,7 +196,12 @@ class VAEXperiment(pl.LightningModule):
                                             transforms.Resize(self.params['img_size']),
                                             transforms.ToTensor(),
                                             SetRange])
+        elif self.params['dataset'] == 'mnist':
+            transform = transforms.Compose([transforms.Resize(self.params['img_size']),
+                                            transforms.ToTensor(),
+                                            transforms.Normalize((0.1307,), (0.3081,))])
         else:
-            raise ValueError('Undefined dataset type')
+            raise ValueError('No such dataset')
+
         return transform
 
