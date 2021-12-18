@@ -148,13 +148,18 @@ class VAEXperiment(pl.LightningModule):
                              split = "train",
                              transform=transform,
                              download=False)
+            self.num_train_imgs = len(dataset)
         elif self.params['dataset'] == 'mnist':
             dataset = MNIST(root=self.params['data_path'],
                             train=True,
                             transform=transform,
                             download=True)
-
-        self.num_train_imgs = len(dataset)
+            if 'num_samples' in self.params:
+                self.num_train_imgs = self.params['num_samples']
+            else:
+                self.num_train_imgs = len(dataset)
+            dataset = torch.utils.data.Subset(dataset, list(range(self.num_train_imgs)))
+        
         return DataLoader(dataset,
                           batch_size= self.params['batch_size'],
                           shuffle = True,
