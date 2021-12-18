@@ -1,5 +1,5 @@
 model_params:
-  name: 'BetaVAE_second'
+  name: 'BetaVAE'
   in_channels: 1
   latent_dim: 16
   loss_type: 'B'
@@ -24,5 +24,5 @@ trainer_params:
 
 logging_params:
   save_dir: "/content/logs/"
-  name: "BetaVAE_B"
+  name: "second"
   manual_seed: 1265
