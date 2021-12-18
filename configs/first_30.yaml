@@ -1,5 +1,5 @@
 model_params:
-  name: 'BetaVAE_second'
+  name: 'BetaVAE_first_30'
   in_channels: 1
   latent_dim: 16
   loss_type: 'B'
@@ -15,7 +15,7 @@ exp_params:
   LR: 0.0005
   weight_decay: 0.0
   scheduler_gamma: 0.95
-  num_samples: 1500
+  num_samples: 500
 
 trainer_params:
   gpus: 1
